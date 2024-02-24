@@ -25,14 +25,6 @@ contract StormBitCore is IStormBit, Ownable, Pausable {
     address internal _lendingPoolImplementation;
     address internal _lendingVotesImplementation;
 
-    // HELPERs
-    address[] public pools;
-
-    modifier onlyKYCVerified() {
-        require(isKYCVerified(msg.sender), "StormBit: KYC not verified");
-        _;
-    }
-
     constructor(
         address initialOwner,
         address lendingPoolImplementation,
@@ -42,9 +34,7 @@ contract StormBitCore is IStormBit, Ownable, Pausable {
         _lendingVotesImplementation = lendingVotesImplementation;
     }
 
-    function createPool(
-        IStormBitLending.InitParams memory params
-    ) external onlyKYCVerified {
+    function createPool(IStormBitLending.InitParams memory params) external {
         address newPool = Clones.clone(_lendingPoolImplementation);
         address newLendingVotes = Clones.clone(_lendingVotesImplementation);
 
@@ -62,22 +52,12 @@ contract StormBitCore is IStormBit, Ownable, Pausable {
             msg.sender,
             newLendingVotes
         );
-
-        pools.push(newPool);
         emit PoolCreated(newPool, msg.sender);
-    }
-
-    function getPools() external view returns (address[] memory) {
-        return pools;
     }
 
     function _validate(IStormBitLending.InitParams memory params) internal {
         // TODO : perform some checks on the params, protocol checkks
         // require some checks
-    }
-
-    function isKYCVerified(address _address) public view returns (bool) {
-        return true;
     }
 
     function isSupportedStrategy(address _strategy) public view returns (bool) {

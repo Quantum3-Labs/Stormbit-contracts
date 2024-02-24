@@ -27,22 +27,15 @@ contract StormBitLendingVotes is
         __ERC20Permit_init("StormBit");
     }
 
-    function _update(
-        address from,
-        address to,
-        uint256 value
-    ) internal virtual override(ERC20Upgradeable, ERC20VotesUpgradeable) {
+    function _update(address from, address to, uint256 value)
+        internal
+        virtual
+        override(ERC20Upgradeable, ERC20VotesUpgradeable)
+    {
         super._update(from, to, value);
     }
 
-    function nonces(
-        address owner
-    )
-        public
-        view
-        override(NoncesUpgradeable, ERC20PermitUpgradeable)
-        returns (uint256)
-    {
+    function nonces(address owner) public view override(NoncesUpgradeable, ERC20PermitUpgradeable) returns (uint256) {
         return super.nonces(owner);
     }
 

@@ -7,6 +7,4 @@ interface IStormBit {
     event PoolCreated(address indexed pool, address creator);
 
     function createPool(IStormBitLending.InitParams memory params) external;
-
-    function isKYCVerified(address _address) external view returns (bool);
 }
