@@ -5,7 +5,7 @@ import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import "@openzeppelin/contracts/token/ERC721/ERC721.sol";
 import "@openzeppelin/contracts/token/ERC721/IERC721Receiver.sol";
 
-contract NFTAgreement is AgreementBedrock, IERC721Receiver {
+contract ERC721Agreement is AgreementBedrock, IERC721Receiver {
     ERC721 public _nft;
     mapping(address => mapping(uint256 => bool)) public stakedNFT;
     mapping(address => uint256) public nftId;
