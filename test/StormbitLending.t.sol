@@ -38,17 +38,11 @@ contract StormbitLendingTest is Test {
 
         // create a new pool
         stormbitLendingImplementation = address(new StormBitLending());
-        stormbitLendingVotesImplementation = address(
-            new StormBitLendingVotes()
-        );
+        stormbitLendingVotesImplementation = address(new StormBitLendingVotes());
 
-        stormbitLending = StormBitLending(
-            payable(Clones.clone(stormbitLendingImplementation))
-        );
+        stormbitLending = StormBitLending(payable(Clones.clone(stormbitLendingImplementation)));
 
-        stormbitLendingVotes = StormBitLendingVotes(
-            payable(Clones.clone(stormbitLendingVotesImplementation))
-        );
+        stormbitLendingVotes = StormBitLendingVotes(payable(Clones.clone(stormbitLendingVotesImplementation)));
 
         // agreement implementations
         simpleAgreementImplementation = address(new SimpleAgreement());
@@ -61,27 +55,22 @@ contract StormbitLendingTest is Test {
 
         address[] memory supportedAssets = new address[](1);
         supportedAssets[0] = address(mockToken);
-        IStormBitLending.InitParams memory initParams = IStormBitLending
-            .InitParams({
-                name: "StormBit Lending",
-                creditScore: 0,
-                maxAmountOfStakers: 10,
-                votingQuorum: 50,
-                maxPoolUsage: 100,
-                votingPowerCoolDown: VOTING_POWER_COOLDOWN,
-                initAmount: 5 * ONE_THOUSAND,
-                initToken: address(mockToken),
-                supportedAssets: supportedAssets,
-                supportedAgreements: supportedAgreements
-            });
+        IStormBitLending.InitParams memory initParams = IStormBitLending.InitParams({
+            name: "StormBit Lending",
+            creditScore: 0,
+            maxAmountOfStakers: 10,
+            votingQuorum: 50,
+            maxPoolUsage: 100,
+            votingPowerCoolDown: VOTING_POWER_COOLDOWN,
+            initAmount: 5 * ONE_THOUSAND,
+            initToken: address(mockToken),
+            supportedAssets: supportedAssets,
+            supportedAgreements: supportedAgreements
+        });
         stormbitLendingVotes.initialize(address(stormbitLending));
         vm.prank(staker1);
         mockToken.transfer(address(stormbitLending), 5 * ONE_THOUSAND);
-        stormbitLending.initializeLending(
-            initParams,
-            staker1,
-            address(stormbitLendingVotes)
-        );
+        stormbitLending.initializeLending(initParams, staker1, address(stormbitLendingVotes));
     }
 
     function testInitialize() public {
@@ -117,19 +106,12 @@ contract StormbitLendingTest is Test {
         times[1] = secondEndOfMonth;
 
         // build request loan params
-        IStormBitLending.LoanRequestParams
-            memory loanRequestParams = IStormBitLending.LoanRequestParams({
-                amount: 1 * ONE_THOUSAND,
-                token: address(mockToken),
-                agreement: simpleAgreementImplementation,
-                agreementCalldata: abi.encode(
-                    1000,
-                    borrower1,
-                    address(mockToken),
-                    amounts,
-                    times
-                )
-            });
+        IStormBitLending.LoanRequestParams memory loanRequestParams = IStormBitLending.LoanRequestParams({
+            amount: 1 * ONE_THOUSAND,
+            token: address(mockToken),
+            agreement: simpleAgreementImplementation,
+            agreementCalldata: abi.encode(1000, borrower1, address(mockToken), amounts, times)
+        });
 
         vm.prank(borrower1);
         // get the events
@@ -154,19 +136,8 @@ contract StormbitLendingTest is Test {
                 uint256 _voteEnd, // doesnt matter to me
                 string memory _description
             ) = abi.decode(
-                    logs[0].data,
-                    (
-                        uint256,
-                        address,
-                        address[],
-                        uint256[],
-                        string[],
-                        bytes[],
-                        uint256,
-                        uint256,
-                        string
-                    )
-                );
+                logs[0].data, (uint256, address, address[], uint256[], string[], bytes[], uint256, uint256, string)
+            );
 
             // dont check signatures
             require(logs.length == 1);
@@ -189,9 +160,7 @@ contract StormbitLendingTest is Test {
         // voting delay is zero we can start voting right away
         skip(1);
 
-        IGovernor.ProposalState proposalState = stormbitLending.state(
-            proposalId
-        );
+        IGovernor.ProposalState proposalState = stormbitLending.state(proposalId);
 
         require(proposalState == IGovernor.ProposalState.Active);
 
@@ -203,8 +172,7 @@ contract StormbitLendingTest is Test {
         uint256 votingPeriod = stormbitLending.votingPeriod();
         skip(votingPeriod);
 
-        (uint256 againstVotes, uint256 forVotes, ) = stormbitLending
-            .proposalVotes(proposalId);
+        (uint256 againstVotes, uint256 forVotes,) = stormbitLending.proposalVotes(proposalId);
         require(forVotes > againstVotes);
         require(forVotes == stormbitLendingVotes.balanceOf(staker1));
         proposalState = stormbitLending.state(proposalId);
@@ -242,10 +210,7 @@ contract StormbitLendingTest is Test {
                 uint256 _loanAmount,
                 address _loanAgreementImplementation,
                 bytes memory _loanAgreementCalldata
-            ) = abi.decode(
-                    extractCalldata(calldatas[0]),
-                    (address, address, uint256, address, bytes)
-                );
+            ) = abi.decode(extractCalldata(calldatas[0]), (address, address, uint256, address, bytes));
             loanAmount = _loanAmount;
             loanToken = _loanToken;
             loanBorrower = _loanBorrower;
@@ -254,10 +219,7 @@ contract StormbitLendingTest is Test {
         }
 
         require(loanAmount == 1 * ONE_THOUSAND);
-        require(
-            loanAgreementImplementation ==
-                address(simpleAgreementImplementation)
-        );
+        require(loanAgreementImplementation == address(simpleAgreementImplementation));
         require(loanBorrower == borrower1);
         require(loanToken == address(mockToken));
 
@@ -301,9 +263,7 @@ contract StormbitLendingTest is Test {
         return true;
     }
 
-    function extractCalldata(
-        bytes memory calldataWithSelector
-    ) internal pure returns (bytes memory) {
+    function extractCalldata(bytes memory calldataWithSelector) internal pure returns (bytes memory) {
         bytes memory calldataWithoutSelector;
 
         require(calldataWithSelector.length >= 4);
@@ -317,16 +277,9 @@ contract StormbitLendingTest is Test {
 
             mstore(0x40, add(calldataWithoutSelector, add(0x20, targetLength)))
 
-            mstore(
-                add(calldataWithoutSelector, 0x20),
-                shl(0x20, mload(add(calldataWithSelector, 0x20)))
-            )
+            mstore(add(calldataWithoutSelector, 0x20), shl(0x20, mload(add(calldataWithSelector, 0x20))))
 
-            for {
-                let i := 0x1C
-            } lt(i, targetLength) {
-                i := add(i, 0x20)
-            } {
+            for { let i := 0x1C } lt(i, targetLength) { i := add(i, 0x20) } {
                 mstore(
                     add(add(calldataWithoutSelector, 0x20), i),
                     mload(add(add(calldataWithSelector, 0x20), add(i, 0x04)))

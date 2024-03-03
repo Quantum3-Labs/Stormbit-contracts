@@ -25,11 +25,9 @@ contract StormBitCore is IStormBit, Ownable, Pausable {
     address internal _lendingPoolImplementation;
     address internal _lendingVotesImplementation;
 
-    constructor(
-        address initialOwner,
-        address lendingPoolImplementation,
-        address lendingVotesImplementation
-    ) Ownable(initialOwner) {
+    constructor(address initialOwner, address lendingPoolImplementation, address lendingVotesImplementation)
+        Ownable(initialOwner)
+    {
         _lendingPoolImplementation = lendingPoolImplementation;
         _lendingVotesImplementation = lendingVotesImplementation;
     }
@@ -41,17 +39,9 @@ contract StormBitCore is IStormBit, Ownable, Pausable {
         IStormBitLendingVotes(newLendingVotes).initialize(newPool);
 
         // transfer the tokens
-        IERC20(params.initToken).transferFrom(
-            msg.sender,
-            newPool,
-            params.initAmount
-        );
+        IERC20(params.initToken).transferFrom(msg.sender, newPool, params.initAmount);
 
-        IStormBitLending(newPool).initializeLending(
-            params,
-            msg.sender,
-            newLendingVotes
-        );
+        IStormBitLending(newPool).initializeLending(params, msg.sender, newLendingVotes);
         emit PoolCreated(newPool, msg.sender);
     }
 

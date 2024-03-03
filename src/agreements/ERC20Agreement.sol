@@ -3,7 +3,7 @@ pragma solidity ^0.8.21;
 import "../AgreementBedrock.sol";
 import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 
-contract FTAgreement is AgreementBedrock {
+contract ERC20Agreement is AgreementBedrock {
     uint256 internal _collateral;
 
     function initialize(bytes memory initData) public override initializer {
