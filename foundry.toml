@@ -25,7 +25,7 @@ linea = "https://rpc.goerli.linea.build"
 mantleTestnet = "https://rpc.testnet.mantle.xyz"
 scrollSepolia = "https://rpc.ankr.com/scroll_sepolia_testnet"
 neonDevnet = "https://devnet.neonevm.org"
-baseGoerli = "https://base-goerli.g.alchemy.com/v2/JsSsdQeYjg9VZK7Dp2kjAxtFM2Dwa4dv"
+baseSepolia = "https://base-sepolia-rpc.publicnode.com"
 celoAlfajores = "https://alfajores-forno.celo-testnet.org"
 gnosisChiado = "https://rpc.chiadochain.net"
 
@@ -36,7 +36,7 @@ arbitrumGoerli = { key = "${ETHERSCAN_API_KEY}" }
 baseGoerli = { key = "${ETHERSCAN_API_KEY}" }
 celoAlfajores = { key = "${ETHERSCAN_API_KEY}" }
 scrollSepolia = { key = "${ETHERSCAN_API_KEY}" , url = "https://api-sepolia.scrollscan.dev/api" }
-
+baseSepolia = { key = "${ETHERSCAN_API_KEY}" }
 
 
 # See more config options https://github.com/foundry-rs/foundry/tree/master/config
