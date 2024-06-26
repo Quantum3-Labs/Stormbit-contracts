@@ -9,6 +9,9 @@ library Hooks {
         bool beforeDepositToTerm;
     }
 
+    /**
+     * Custom errors *
+     */
     error HookAddressNotValid(address hooks);
 
     function validateHookPermissions(IHooks self, Permissions memory permissions) internal pure {

@@ -43,6 +43,13 @@ contract StormbitLendingManager is
     mapping(uint256 termId => mapping(address vaultToken => uint256 shares)) termFreezedShares; // track who delegated to the term
     mapping(uint256 termId => mapping(uint256 loanId => mapping(address vaultToken => bool))) public lenderClaimedProfit; // mapping to track lender claim profit
 
+    /**
+     * Custom errors *
+     */
+
+    error ShareTransferFailed();
+    error ProfitTransferFailed();
+
     constructor(address initialGovernor) {
         _governor = initialGovernor;
     }
@@ -134,7 +141,7 @@ contract StormbitLendingManager is
         // transfer shares to lending manager
         bool isSuccess = IERC4626(vaultToken).transferFrom(msg.sender, address(this), shares);
         if (!isSuccess) {
-            revert("StormbitLendingManager: failed to transfer shares");
+            revert ShareTransferFailed();
         }
 
         // update the amount of shares delegated to the term by the user
@@ -193,7 +200,7 @@ contract StormbitLendingManager is
         // transfer shares back to user
         bool isSuccess = IERC4626(vaultToken).transfer(msg.sender, shares + profit);
         if (!isSuccess) {
-            revert("StormbitLendingManager: failed to transfer shares");
+            revert ProfitTransferFailed();
         }
 
         emit WithdrawFromTerm(termId, msg.sender, token, shares);
@@ -239,7 +246,7 @@ contract StormbitLendingManager is
         // transfer profit shares to term owner
         bool isSuccess = IERC4626(vaultToken).transfer(termOwner, termOwnerProfitShares);
         if (!isSuccess) {
-            revert("StormbitLendingManager: failed to transfer profit");
+            revert ProfitTransferFailed();
         }
         emit LenderClaimLoanProfit(termId, loanId, token, termOwnerProfitShares);
     }

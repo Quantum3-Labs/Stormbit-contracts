@@ -34,6 +34,12 @@ contract StormbitAssetManager is
     mapping(address token => bool isSupported) tokens; // check if token is supported
     mapping(address token => address vaultToken) vaultTokens; // token to vault mapping
 
+    /**
+     * Custom errors *
+     */
+
+    error FailedTransfer();
+
     constructor(address initialGovernor) {
         _governor = initialGovernor;
     }
@@ -75,7 +81,7 @@ contract StormbitAssetManager is
         // todo: use safe transfer
         bool isSuccess = IERC20(token).transferFrom(msg.sender, address(this), assets);
         if (!isSuccess) {
-            revert("StormbitAssetManager: transfer failed");
+            revert FailedTransfer();
         }
         IERC20(token).approve(vaultToken, assets);
         IERC4626(vaultToken).deposit(assets, msg.sender);
@@ -89,7 +95,7 @@ contract StormbitAssetManager is
         // first make sure can transfer user token to manager
         bool isSuccess = IERC20(token).transferFrom(depositor, address(this), assets);
         if (!isSuccess) {
-            revert("StormbitAssetManager: transfer failed");
+            revert FailedTransfer();
         }
         IERC20(token).approve(vaultToken, assets);
         IERC4626(vaultToken).deposit(assets, receiver);
