@@ -34,9 +34,11 @@ contract StormbitAssetManager is
     mapping(address token => bool isSupported) tokens; // check if token is supported
     mapping(address token => address vaultToken) vaultTokens; // token to vault mapping
 
-     /** Custom errors **/
+    /**
+     * Custom errors *
+     */
 
-     error FailedTransfer();
+    error FailedTransfer();
 
     constructor(address initialGovernor) {
         _governor = initialGovernor;

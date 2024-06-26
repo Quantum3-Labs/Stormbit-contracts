@@ -43,12 +43,12 @@ contract StormbitLendingManager is
     mapping(uint256 termId => mapping(address vaultToken => uint256 shares)) termFreezedShares; // track who delegated to the term
     mapping(uint256 termId => mapping(uint256 loanId => mapping(address vaultToken => bool))) public lenderClaimedProfit; // mapping to track lender claim profit
 
-
-    /** Custom errors **/
+    /**
+     * Custom errors *
+     */
 
     error ShareTransferFailed();
     error ProfitTransferFailed();
-
 
     constructor(address initialGovernor) {
         _governor = initialGovernor;
