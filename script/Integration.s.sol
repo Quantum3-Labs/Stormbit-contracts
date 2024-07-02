@@ -2,9 +2,9 @@
 pragma solidity ^0.8.21;
 
 import {MockToken} from "src/mocks/MockToken.sol";
-import {StormbitAssetManager} from "../src/AssetManager.sol";
-import {StormbitLendingManager} from "../src/LendingManager.sol";
-import {StormbitLoanManager} from "../src/LoanManager.sol";
+import {AssetManager} from "../src/AssetManager.sol";
+import {LendingManager} from "../src/LendingManager.sol";
+import {LoanManager} from "../src/LoanManager.sol";
 import {StormbitRegistry} from "src/StormbitRegistry.sol";
 import {DeployHelpers, console} from "script/DeployHelpers.s.sol";
 import {IHooks} from "src/interfaces/hooks/IHooks.sol";
@@ -16,9 +16,9 @@ contract Integration is DeployHelpers {
     function run() public {
         uint256 pk = vm.envUint("PRIVATE_KEY");
         vm.startBroadcast(pk);
-        StormbitLendingManager lendingManager = StormbitLendingManager(getDeployment("LendingManager"));
+        LendingManager lendingManager = LendingManager(getDeployment("LendingManager"));
         StormbitRegistry registry = StormbitRegistry(getDeployment("StormbitRegistry"));
-        StormbitAssetManager assetManager = StormbitAssetManager(getDeployment("AssetManager"));
+        AssetManager assetManager = AssetManager(getDeployment("AssetManager"));
 
         MockToken mockUsdt = MockToken(getDeployment("MockUsdt"));
         mockUsdt.mint(vm.addr(pk), INITIAL_DEPOSIT);

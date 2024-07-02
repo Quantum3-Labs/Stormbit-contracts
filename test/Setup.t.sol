@@ -2,9 +2,9 @@
 pragma solidity ^0.8.21;
 
 import {ERC20Mock} from "@openzeppelin/contracts/mocks/token/ERC20Mock.sol";
-import {StormbitAssetManager} from "../src/AssetManager.sol";
-import {StormbitLendingManager} from "../src/LendingManager.sol";
-import {StormbitLoanManager} from "../src/LoanManager.sol";
+import {AssetManager} from "../src/AssetManager.sol";
+import {LendingManager} from "../src/LendingManager.sol";
+import {LoanManager} from "../src/LoanManager.sol";
 import {TestUtils} from "./Utils.t.sol";
 import {BaseVault} from "../src/vaults/BaseVault.sol";
 
@@ -13,9 +13,9 @@ contract SetupTest is TestUtils {
     ERC20Mock token2;
     ERC20Mock token3;
 
-    StormbitAssetManager assetManager;
-    StormbitLendingManager lendingManager;
-    StormbitLoanManager loanManager;
+    AssetManager assetManager;
+    LendingManager lendingManager;
+    LoanManager loanManager;
 
     BaseVault vaultToken1;
     BaseVault vaultToken2;
@@ -29,9 +29,9 @@ contract SetupTest is TestUtils {
         token3 = new ERC20Mock();
 
         supportedTokens = [address(token1), address(token2), address(token3)];
-        assetManager = new StormbitAssetManager(governor);
-        lendingManager = new StormbitLendingManager(governor);
-        loanManager = new StormbitLoanManager(governor);
+        assetManager = new AssetManager(governor);
+        lendingManager = new LendingManager(governor);
+        loanManager = new LoanManager(governor);
 
         assetManager.initialize(address(loanManager), address(lendingManager));
         lendingManager.initialize(address(assetManager), address(loanManager));

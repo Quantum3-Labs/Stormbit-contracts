@@ -3,12 +3,12 @@ pragma solidity ^0.8.21;
 
 import {Hooks} from "../libraries/Hooks.sol";
 import {BaseHook} from "./BaseHook.sol";
-import {StormbitLendingManager} from "../LendingManager.sol";
+import {ILendingManager} from "../interfaces/managers/lending/ILendingManager.sol";
 
 contract WhiteList is BaseHook {
     mapping(address user => bool isWhiteListed) private whitelist;
 
-    constructor(StormbitLendingManager _manager, address[] memory whiteListedAddrs) BaseHook(_manager) {
+    constructor(ILendingManager _manager, address[] memory whiteListedAddrs) BaseHook(_manager) {
         for (uint256 i = 0; i < whiteListedAddrs.length; i++) {
             whitelist[whiteListedAddrs[i]] = true;
         }

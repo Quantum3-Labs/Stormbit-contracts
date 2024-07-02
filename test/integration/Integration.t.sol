@@ -126,7 +126,7 @@ contract IntegrationTest is SetupTest {
 
         // term owner claim loan profit
         vm.startPrank(lender1);
-        loanManager.claimLoanProfit(termId, loanId);
+        loanManager.claimAllocation(termId, loanId);
         vm.stopPrank();
 
         // check term owner balance
@@ -301,7 +301,7 @@ contract IntegrationTest is SetupTest {
 
         // term owner claim loan profit
         vm.startPrank(lender1);
-        loanManager.claimLoanProfit(termId, loanId);
+        loanManager.claimAllocation(termId, loanId);
         vm.stopPrank();
 
         // check term owner balance
@@ -517,7 +517,7 @@ contract IntegrationTest is SetupTest {
 
         // term owner claim loan profit for term1
         vm.startPrank(lender1);
-        loanManager.claimLoanProfit(termId1, loanId);
+        loanManager.claimAllocation(termId1, loanId);
         vm.stopPrank();
 
         // check term owner balance
@@ -544,7 +544,7 @@ contract IntegrationTest is SetupTest {
 
         // term owner claim loan profit for term2
         vm.startPrank(lender1);
-        loanManager.claimLoanProfit(termId2, loanId);
+        loanManager.claimAllocation(termId2, loanId);
         vm.stopPrank();
 
         // check term owner balance

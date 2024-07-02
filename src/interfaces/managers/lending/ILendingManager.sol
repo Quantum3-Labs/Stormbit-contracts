@@ -39,6 +39,8 @@ interface ILendingManager {
 
     event FreezeSharesOnTerm(uint256 indexed termId, address indexed token, uint256 shares);
 
+    event UnfreezeSharesOnTerm(uint256 indexed termId, address indexed token, uint256 shares);
+
     event DistributeProfit(uint256 indexed termId, address indexed token, uint256 profit);
 
     function createLendingTerm(uint256 comission, IHooks hooks) external returns (uint256);
@@ -52,6 +54,8 @@ interface ILendingManager {
     function withdrawFromTerm(uint256 termId, address token, uint256 requestedDecrease) external;
 
     function freezeTermShares(uint256 termId, uint256 shares, address token) external;
+
+    function unfreezeTermShares(uint256 termId, uint256 shares, address token) external;
 
     function distributeProfit(uint256 termId, address token, uint256 weight, uint256 shares, uint256 ownerProfit)
         external;

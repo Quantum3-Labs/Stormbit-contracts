@@ -13,7 +13,7 @@ import {ILendingManager} from "./interfaces/managers/lending/ILendingManager.sol
 /// @title Stormbit Loan Manager
 /// @notice entrypoint for loan related operations
 
-contract StormbitLoanManager is Initializable, IGovernable, IInitialize, ILoanManager {
+contract LoanManager is Initializable, IGovernable, IInitialize, ILoanManager {
     uint16 public constant BASIS_POINTS = 10_000;
 
     address private _governor;
@@ -181,44 +181,62 @@ contract StormbitLoanManager is Initializable, IGovernable, IInitialize, ILoanMa
         emit AllocatedTermAndFundOnLoan(loanId, termId, assets);
     }
 
-    /// @dev allow lender to claim the profit for loan, then add the remaining profit to term profit
-    function claimLoanProfit(uint256 termId, uint256 loanId) public override {
+    /// @dev allow lender to claim the profit for loan or claim the allocated fund to loan but loan deadline pass and not executed, then add the remaining profit to term profit
+    function claimAllocation(uint256 termId, uint256 loanId) public override {
         Loan memory loan = loans[loanId];
         address vaultToken = assetManager.getVaultToken(loan.token);
-        // check if the profit has been claimed
-        require(!lenderClaimedProfit[termId][loanId][vaultToken], "StormbitLendingManager: profit already claimed");
-        // get loan
-        require(loan.status == ILoanManager.LoanStatus.Repaid, "StormbitLendingManager: loan not repaid");
+
+        require(
+            loan.status == ILoanManager.LoanStatus.Repaid || loan.status == ILoanManager.LoanStatus.Pending,
+            "StormbitLendingManager: loan not repaid nor pending"
+        );
         // term allocated on shares should > 0
         uint256 weight = termAllocatedShares[loanId][termId][vaultToken];
         require(weight > 0, "StormbitLendingManager: term not allocated on loan");
 
-        // get lending term
-        ILendingManager.LendingTermMetadata memory term = lendingManager.getLendingTerm(termId);
-        // convert repay assets to shares
-        uint256 repayShares = assetManager.convertToShares(loan.token, loan.repayAssets);
-        // calculate profit
-        // calculate shares required, convert assets to shares
-        uint256 sharesRequired = assetManager.convertToShares(loan.token, loan.assetsRequired);
-        uint256 profitShares = repayShares - sharesRequired;
-        // calculate weight of term in shares / loan required shares
-        uint256 termFundedPercent = (weight * BASIS_POINTS) / sharesRequired;
-        // term owner profit shares
-        uint256 termProfitShares = (profitShares * termFundedPercent) / BASIS_POINTS;
-        // from term profit shares, get commission for term owner
-        uint256 termOwnerProfitShares = (termProfitShares * term.comission) / BASIS_POINTS;
-        // calculate the remaining profit after term owner profit
-        uint256 extraProfit = termProfitShares - termOwnerProfitShares;
+        if (loan.status == ILoanManager.LoanStatus.Repaid) {
+            // check if the profit has been claimed
+            if (lenderClaimedProfit[termId][loanId][vaultToken]) {
+                revert("StormbitLendingManager: profit already claimed");
+            }
+            // get lending term
+            ILendingManager.LendingTermMetadata memory term = lendingManager.getLendingTerm(termId);
+            // convert repay assets to shares
+            uint256 repayShares = assetManager.convertToShares(loan.token, loan.repayAssets);
+            // calculate profit
+            // calculate shares required, convert assets to shares
+            uint256 sharesRequired = assetManager.convertToShares(loan.token, loan.assetsRequired);
+            uint256 profitShares = repayShares - sharesRequired;
+            // calculate weight of term in shares / loan required shares
+            uint256 termFundedPercent = (weight * BASIS_POINTS) / sharesRequired;
+            // term owner profit shares
+            uint256 termProfitShares = (profitShares * termFundedPercent) / BASIS_POINTS;
+            // from term profit shares, get commission for term owner
+            uint256 termOwnerProfitShares = (termProfitShares * term.comission) / BASIS_POINTS;
+            // calculate the remaining profit after term owner profit
+            uint256 extraProfit = termProfitShares - termOwnerProfitShares;
 
-        lendingManager.distributeProfit(termId, loan.token, extraProfit, weight, termOwnerProfitShares);
+            lendingManager.distributeProfit(termId, loan.token, extraProfit, weight, termOwnerProfitShares);
 
-        // update claimed status
-        lenderClaimedProfit[termId][loanId][vaultToken] = true;
+            // update claimed status
+            lenderClaimedProfit[termId][loanId][vaultToken] = true;
 
-        // decrement term allocated counter
-        termLoanAllocatedCounter[termId] -= 1;
+            // decrement term allocated counter
+            termLoanAllocatedCounter[termId] -= 1;
 
-        emit ClaimLoanProfit(termId, loanId, loan.token, termOwnerProfitShares);
+            emit ClaimAllocation(termId, loanId, loan.token, termOwnerProfitShares);
+        } else if (loan.status == ILoanManager.LoanStatus.Pending) {
+            // if block.timestamp not passed the deadline
+            if (block.timestamp < loan.deadlineAllocate) {
+                revert("StormbitLendingManager: loan not eligible for claiming");
+            }
+            // If the loan deadline has passed and was not executed, unfreeze the term shares
+            lendingManager.unfreezeTermShares(termId, weight, loan.token);
+            // update loan status to cancelled
+            loans[loanId].status = ILoanManager.LoanStatus.Cancelled;
+
+            emit ClaimAllocation(termId, loanId, loan.token, weight);
+        }
     }
 
     // -----------------------------------------

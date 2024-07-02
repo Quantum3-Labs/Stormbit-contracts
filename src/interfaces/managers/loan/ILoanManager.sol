@@ -31,7 +31,7 @@ interface ILoanManager {
 
     event LoanRepaid(uint256 indexed loanId, address indexed repayUser);
 
-    event ClaimLoanProfit(uint256 indexed termId, uint256 indexed loanId, address indexed token, uint256 profit);
+    event ClaimAllocation(uint256 indexed termId, uint256 indexed loanId, address indexed token, uint256 shares);
 
     function requestLoan(address token, uint256 assets, uint256 deadline) external returns (uint256);
 
@@ -41,7 +41,7 @@ interface ILoanManager {
 
     function repay(uint256 loanId) external;
 
-    function claimLoanProfit(uint256 termId, uint256 loanId) external;
+    function claimAllocation(uint256 termId, uint256 loanId) external;
 
     function getLoan(uint256 loanId) external view returns (Loan memory);
 

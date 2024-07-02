@@ -16,7 +16,7 @@ import {ILendingManager} from "./interfaces/managers/lending/ILendingManager.sol
 /// @title Stormbit Asset Manager
 /// @notice entrypoint for all asset management operations
 
-contract StormbitAssetManager is Initializable, IGovernable, IInitialize, IAssetManager {
+contract AssetManager is Initializable, IGovernable, IInitialize, IAssetManager {
     using Math for uint256;
 
     address private _governor;

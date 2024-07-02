@@ -3,9 +3,9 @@ pragma solidity ^0.8.21;
 
 import {Script} from "forge-std/Script.sol";
 import {MockToken} from "src/mocks/MockToken.sol";
-import {StormbitAssetManager} from "../src/AssetManager.sol";
-import {StormbitLendingManager} from "../src/LendingManager.sol";
-import {StormbitLoanManager} from "../src/LoanManager.sol";
+import {AssetManager} from "../src/AssetManager.sol";
+import {LendingManager} from "../src/LendingManager.sol";
+import {LoanManager} from "../src/LoanManager.sol";
 import {DeployHelpers} from "script/DeployHelpers.s.sol";
 import {StormbitRegistry} from "src/StormbitRegistry.sol";
 
@@ -24,9 +24,9 @@ contract Deploy is DeployHelpers {
         MockToken mockDai = new MockToken("Dai Stablecoin", "DAI");
         MockToken mockUsdc = new MockToken("USD Coin ", "USDC");
 
-        StormbitAssetManager assetManager = new StormbitAssetManager(deployer);
-        StormbitLendingManager lendingManager = new StormbitLendingManager(deployer);
-        StormbitLoanManager loanManager = new StormbitLoanManager(deployer);
+        AssetManager assetManager = new AssetManager(deployer);
+        LendingManager lendingManager = new LendingManager(deployer);
+        LoanManager loanManager = new LoanManager(deployer);
 
         assetManager.initialize(address(loanManager), address(lendingManager));
         lendingManager.initialize(address(assetManager), address(loanManager));

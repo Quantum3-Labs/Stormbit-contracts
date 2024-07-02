@@ -3,14 +3,14 @@ pragma solidity ^0.8.21;
 
 import {IHooks} from "../interfaces/hooks/IHooks.sol";
 import {Hooks} from "../libraries/Hooks.sol";
-import {StormbitLendingManager} from "../LendingManager.sol";
+import {ILendingManager} from "../interfaces/managers/lending/ILendingManager.sol";
 
 abstract contract BaseHook is IHooks {
     error NotManager();
 
-    StormbitLendingManager public immutable manager;
+    ILendingManager public immutable manager;
 
-    constructor(StormbitLendingManager _manager) {
+    constructor(ILendingManager _manager) {
         manager = _manager;
         validateHookAddress(this);
     }

@@ -1,21 +1,21 @@
 //SPDX-License-Identifier: MIT
-pragma solidity 0.8.21;
+pragma solidity ^0.8.21;
 
 import {ERC4626} from "@openzeppelin/contracts/token/ERC20/extensions/ERC4626.sol";
 import {IERC20} from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import {ERC20} from "@openzeppelin/contracts/token/ERC20/ERC20.sol";
-import {StormbitAssetManager} from "../AssetManager.sol";
+import {IAssetManager} from "../interfaces/managers/asset/IAssetManager.sol";
 
 contract BaseVault is ERC4626 {
     error OnlyAssetManager();
 
-    StormbitAssetManager private assetManager;
+    IAssetManager private assetManager;
 
     constructor(IERC20 _token, address assetManagerAddr, string memory _name, string memory _symbol)
         ERC4626(_token)
         ERC20(_name, _symbol)
     {
-        assetManager = StormbitAssetManager(assetManagerAddr);
+        assetManager = IAssetManager(assetManagerAddr);
     }
 
     modifier onlyAssetManager() {
